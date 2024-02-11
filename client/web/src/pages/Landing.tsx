@@ -28,7 +28,6 @@ const Landing = () => {
   const [repoUrl, setRepoUrl] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [stepName, setStepName] = useState<string>("Deploy");
-  const [prevIds, setPrevIds] = useState<string[]>([]);
   // const [name, setName] = useState<string>("");
 
   useEffect(() => {
@@ -98,22 +97,9 @@ const Landing = () => {
     initiateStatusQuery();
   }, [id]);
 
-  const fetchPrevIds = async () => {
-    await axios({
-      method: "get",
-      url: `${BACKEND_UPLOAD_URL}/ids`,
-    }).then((res) => {
-      console.log("Response:", res.data);
-      setPrevIds(res.data.folders);
-    });
-  };
-  useEffect(() => {
-    fetchPrevIds();
-  }, [id]);
-
   return (
-    <main className="flex flex-col items-center  justify-center h-screen bg-gray-100 dark:bg-gray-900">
-      <Card className="w-[500px]">
+    <main className="flex flex-col items-center justify-center mt-16 pt-16 w-full bg-background">
+      <Card className="w-[500px] bg-card">
         <CardHeader>
           <CardTitle>Create project</CardTitle>
           <CardDescription>
@@ -176,45 +162,6 @@ const Landing = () => {
           </CardFooter>
         )}
       </Card>
-      {prevIds?.map((id) => (
-        <Card id={id} className="w-[500px] mt-4">
-          <CardHeader>
-            <CardTitle>Project deployed</CardTitle>
-            <CardDescription>
-              Your project has been deployed successfully.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">
-                Project ID: <span className="text-muted">{id}</span>
-              </Label>
-              <Label htmlFor="name">
-                Project utl:{" "}
-                <span className="text-muted">http://{id}.localhost:3001</span>
-              </Label>
-              {/* <Input
-                id="name"
-                value={id}
-                autoCapitalize="off"
-                autoCorrect="off"
-                autoComplete="off"
-                disabled
-              /> */}
-            </div>
-          </CardContent>
-          <CardFooter className="flex">
-            <Button
-              className="flex-grow"
-              onClick={() => {
-                window.open(`http://${id}.localhost:3001`, "_blank");
-              }}
-            >
-              View deployment
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
     </main>
   );
 };

@@ -4,7 +4,7 @@ import simpleGit from "simple-git";
 import path from "path";
 import { createClient } from "redis";
 
-import { uploadFile } from "./db";
+import { getUploads, uploadFile } from "./db";
 import generateId from "./utils/generate-id";
 import getFilePaths from "./utils/get-file-paths";
 import getFoldersInDir from "./utils/get-folders-in-dir";
@@ -89,9 +89,16 @@ app.get("/status", async (req, res) => {
 });
 
 app.get("/ids", async (req, res) => {
-  const pathTorepos = path.join(__dirname, "repos");
-  const folders = await getFoldersInDir(pathTorepos);
-  res.json({ folders });
+  // const pathTorepos = path.join(__dirname, "repos");
+  const folders = await getUploads();
+  const ids: string[] = [];
+  folders?.forEach((folder) => {
+    const id = folder.Key?.split("/")[1];
+    if (!ids.includes(id as string)) {
+      ids.push(id as string);
+    }
+  });
+  res.json({ ids });
 });
 
 app.listen(PORT, () => {
