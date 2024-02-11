@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "bun ./src/index.ts"
+    "dev": "bun ./src/index.ts",
+    "start": "bun ./dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
