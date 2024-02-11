@@ -7,6 +7,7 @@ import { createClient } from "redis";
 import { uploadFile } from "./db";
 import generateId from "./utils/generate-id";
 import getFilePaths from "./utils/get-file-paths";
+import getFoldersInDir from "./utils/get-folders-in-dir";
 
 const app = express();
 const git = simpleGit();
@@ -22,11 +23,17 @@ app.use(express.json());
 const repoFolderPath = path.join(__dirname, "repos");
 let prevIds: string[] = [];
 
-
 app.post("/upload", async (req, res) => {
   const repoUrl = req.body.repoUrl;
   if (!repoUrl) {
     return res.status(400).json({ message: "repoUrl is required" });
+  }
+  // check if repoUrl is valid
+  try {
+    console.log(repoUrl);
+    await git.listRemote(["--get-url", repoUrl]);
+  } catch (error) {
+    return res.status(400).json({ message: "Invalid repoUrl" });
   }
   let id: string;
   while (true) {
@@ -60,11 +67,22 @@ app.post("/upload", async (req, res) => {
 });
 
 app.get("/status", async (req, res) => {
+  // console.log(req.host);
   const id = req.query.id;
+  if (!id) {
+    return res.status(400).json({ message: "id is required" });
+  }
+  // console.log("id", id);
   const response = await subscriber.hGet("status", id as string);
   res.json({
     status: response,
   });
+});
+
+app.get("/ids", async (req, res) => {
+  const pathTorepos = path.join(__dirname, "repos");
+  const folders = await getFoldersInDir(pathTorepos);
+  res.json({ folders });
 });
 
 app.listen(PORT, () => {

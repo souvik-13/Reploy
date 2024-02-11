@@ -13,7 +13,7 @@ const s3Client = new S3Client({
 export const uploadFile = async (localFilePath: string, fileName: string) => {
   const fileContent = fs.readFileSync(localFilePath);
   const params = {
-    Bucket: "reploy",
+    Bucket: "souviksbasket1",
     Key: fileName,
     Body: fileContent,
   };

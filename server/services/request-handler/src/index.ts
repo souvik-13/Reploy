@@ -25,7 +25,7 @@ app.get("/*", async (req, res) => {
   try {
     const files = await s3.send(
       new GetObjectCommand({
-        Bucket: "reploy",
+        Bucket: "souviksbasket1",
         Key: key,
       }),
     );

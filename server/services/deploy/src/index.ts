@@ -18,7 +18,7 @@ async function main() {
     if (popedId) {
       const { key, element } = popedId;
       if (key === "build-queue") {
-        const bucket = "reploy";
+        const bucket = "souviksbasket1";
         const prefix = "repos/" + element;
         console.log("Building project", element);
 
