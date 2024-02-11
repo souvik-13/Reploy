@@ -29,15 +29,43 @@ app.get("/*", async (req, res) => {
         Key: key,
       }),
     );
-    const type = filePath.split(".").pop();
-    res.set(
-      "Content-Type",
-      type === "html"
-        ? "text/html"
-        : type === "css"
-        ? "text/css"
-        : "application/javascript",
-    );
+    const ext = filePath.split(".").pop();
+    let type: string;
+    switch (ext) {
+      case "html":
+        type = "text/html";
+        break;
+      case "css":
+        type = "text/css";
+        break;
+      case "js":
+        type = "text/javascript";
+        break;
+      case "json":
+        type = "application/json";
+        break;
+      case "png":
+        type = "image/png";
+        break;
+      case "jpg":
+        type = "image/jpg";
+        break;
+      case "jpeg":
+        type = "image/jpeg";
+        break;
+      case "svg":
+        type = "image/svg+xml";
+        break;
+      case "gif":
+        type = "image/gif";
+        break;
+      case "ico":
+        type = "image/x-icon";
+        break;
+      default:
+        type = "text/plain";
+    }
+    res.set("Content-Type", type);
     // console.log(files);
     if (files.Body instanceof stream.Readable) {
       files.Body.pipe(res);
