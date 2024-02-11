@@ -11,7 +11,7 @@ import getFoldersInDir from "./utils/get-folders-in-dir";
 
 const app = express();
 const git = simpleGit();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const publisher = createClient();
 const subscriber = createClient();
 publisher.connect();

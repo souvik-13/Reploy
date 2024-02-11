@@ -3,6 +3,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import * as config from "./config";
 import stream from "stream";
 
+const port = process.env.PORT || 3001;
 const app = express();
 const s3 = new S3Client({
   region: config.AWS_REGION,
@@ -12,7 +13,7 @@ const s3 = new S3Client({
   },
 });
 
-app.listen(3001, () => {
+app.listen(port, () => {
   console.log("Server is running on port 3001");
 });
 
