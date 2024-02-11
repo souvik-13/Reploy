@@ -2,6 +2,7 @@ import { commandOptions, createClient } from "redis";
 import path from "path";
 import { downloadS3Folder, uploadFinalDist } from "./aws";
 import { buildProject, installDependencies } from "./project-builder";
+import { cleanUp } from "./utils";
 const subscriber = createClient();
 const publisher = createClient();
 subscriber.connect();
@@ -51,6 +52,13 @@ async function main() {
 
         console.log("🚀 Project built and uploaded");
         publisher.hSet("status", element, "deployed");
+
+        // Cleanup
+        console.log("🧹 Cleaning up");
+        setTimeout(() => {
+          cleanUp(folderPath);
+        }, 1000 * 60 * 60 * 24);
+        console.log("✅ Cleaned up");
       }
     }
   }

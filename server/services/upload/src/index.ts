@@ -8,6 +8,7 @@ import { uploadFile } from "./db";
 import generateId from "./utils/generate-id";
 import getFilePaths from "./utils/get-file-paths";
 import getFoldersInDir from "./utils/get-folders-in-dir";
+import { cleanUp } from "./utils/cleanup";
 
 const app = express();
 const git = simpleGit();
@@ -57,6 +58,14 @@ app.post("/upload", async (req, res) => {
     console.log("✅ Uploaded files");
 
     console.log("🚃 Added to build queue");
+
+    // cleanup
+    setTimeout(() => {
+      console.log("🧹 Cleaning up");
+      cleanUp(repoPath);
+      console.log("✅ Cleaned up");
+    }, 1000 * 60 * 60 * 24);
+
     publisher.lPush("build-queue", id);
     publisher.hSet("status", id, "uploaded");
 
