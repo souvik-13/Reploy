@@ -1,0 +1,6 @@
+{
+  "watch": "src",
+  "ext": "ts",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "bun run build && bun run start"
+}
