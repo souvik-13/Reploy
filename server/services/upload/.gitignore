@@ -1,7 +1,7 @@
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
 config.ts
-
+node_modules
 # Logs
 
 logs
