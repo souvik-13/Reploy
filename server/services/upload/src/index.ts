@@ -4,7 +4,7 @@ import simpleGit from "simple-git";
 import path from "path";
 import { createClient } from "redis";
 
-import { getUploads, uploadFile } from "./db";
+import { deleteFile, getUploads, uploadFile } from "./db";
 import generateId from "./utils/generate-id";
 import getFilePaths from "./utils/get-file-paths";
 import getFoldersInDir from "./utils/get-folders-in-dir";
@@ -23,6 +23,7 @@ app.use(express.json());
 
 const repoFolderPath = path.join(__dirname, "repos");
 let prevIds: string[] = [];
+let listUploads: string[] = [];
 
 app.post("/upload", async (req, res) => {
   const repoUrl = req.body.repoUrl;
@@ -34,6 +35,12 @@ app.post("/upload", async (req, res) => {
     console.log(repoUrl);
     await git.listRemote(["--get-url", repoUrl]);
   } catch (error) {
+    console.log(
+      `Error on upload
+        repoURl: ${repoUrl}
+        error: ${error}
+      `,
+    );
     return res.status(400).json({ message: "Invalid repoUrl" });
   }
   let id: string;
@@ -71,6 +78,12 @@ app.post("/upload", async (req, res) => {
 
     res.json({ id });
   } catch (error) {
+    console.log(
+      `Error on upload
+        repoURl: ${repoUrl}
+        error: ${error}
+      `,
+    );
     res.status(500).json({ message: "Error cloning repository" });
   }
 });
@@ -90,21 +103,60 @@ app.get("/status", async (req, res) => {
 
 app.get("/ids", async (req, res) => {
   // const pathTorepos = path.join(__dirname, "repos");
-  const folders = await getUploads();
-  const ids: string[] = [];
-  folders?.forEach((folder) => {
-    const id = folder.Key?.split("/")[1];
-    if (!ids.includes(id as string)) {
-      ids.push(id as string);
+  try {
+    const folders = await getUploads();
+    listUploads = [];
+    const ids: string[] = [];
+    folders?.forEach((folder) => {
+      listUploads.push(folder.Key as string);
+      const id = folder.Key?.split("/")[1];
+      if (!ids.includes(id as string)) {
+        ids.push(id as string);
+      }
+    });
+    res.json({ ids });
+  } catch (error) {
+    console.log(
+      `Error on /ids
+        error: ${error}
+      `,
+      res.status(500).json({ message: "error getting ids" }),
+    );
+  }
+});
+
+app.delete("/delete", async (req, res) => {
+  const id: string = req.query.id as string;
+  const currentUploads = listUploads;
+  console.log("id", id);
+  try {
+    const toDelete = currentUploads.filter((fileName) => {
+      return fileName.split("/").includes(id);
+    });
+    for (const fileName of toDelete) {
+      await deleteFile(fileName);
     }
-  });
-  res.json({ ids });
+    publisher.hDel("status", id);
+    console.log("deleted");
+    res.json({ deletedFiles: toDelete });
+  } catch (error) {
+    console.log(
+      `Error on /delete
+        id: ${id}
+        error: ${error}
+      `,
+    );
+    res.json({ message: "error deleting repo" });
+  }
 });
 
 app.listen(PORT, () => {
   console.log(
     `Server is running on port ${PORT}
-     POST http://localhost:${PORT}/upload
+        POST    http://localhost:${PORT}/upload
+        GET     http://localhost:${PORT}/status
+        GET     http://localhost:${PORT}/ids?id
+        DELETE  http://localhost:${PORT}/delete?id= 
     `,
   );
 });

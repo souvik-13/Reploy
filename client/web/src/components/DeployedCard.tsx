@@ -9,8 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+// import { Separator } from "@/components/ui/separator";
+import AlertDialog from "@/components/AlertDialog";
 
-const DeployedCard = ({ id, className }: { id: string; className: string }) => {
+const DeployedCard = ({
+  id,
+  className,
+  handleDelete,
+}: {
+  id: string;
+  className: string;
+  handleDelete: (id: string) => void;
+}) => {
   return (
     <div className={cn(className, "flex flex-col max-w-[500px] min-w-[250px]")}>
       <Card id={id} className="p-4 m-4">
@@ -60,25 +70,22 @@ const DeployedCard = ({ id, className }: { id: string; className: string }) => {
                 http://{id}.localhost:3001
               </Button>
             </div>
-            {/* <Input
-                id="name"
-                value={id}
-                autoCapitalize="off"
-                autoCorrect="off"
-                autoComplete="off"
-                disabled
-              /> */}
           </div>
         </CardContent>
-        <CardFooter className="flex">
+        <CardFooter className="flex-col gap-1">
           <Button
-            className="flex-grow"
+            className="w-full"
             onClick={() => {
               window.open(`http://${id}.localhost:3001`, "_blank");
             }}
           >
             View deployment
           </Button>
+          <AlertDialog
+            className="w-full bg-destructive"
+            handleDelete={handleDelete}
+            id={id}
+          />
         </CardFooter>
       </Card>
     </div>

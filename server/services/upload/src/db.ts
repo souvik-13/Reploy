@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand, ListObjectsCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  ListObjectsCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import fs from "fs";
 import * as config from "./config";
 
@@ -28,7 +33,7 @@ export const uploadFile = async (localFilePath: string, fileName: string) => {
 export const getUploads = async () => {
   const params = {
     Bucket: "souviksbasket1",
-    prefix: "dist"
+    prefix: "dist",
   };
   try {
     const data = await s3Client.send(new ListObjectsCommand(params));
@@ -36,4 +41,16 @@ export const getUploads = async () => {
   } catch (error) {
     console.log("Error", error);
   }
+};
+
+export const deleteFile = async (key: string) => {
+  try {
+    const res = s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: "souviksbasket1",
+        Key: key,
+      }),
+    );
+    return res;
+  } catch (error) {}
 };
